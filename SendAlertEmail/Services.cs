@@ -39,24 +39,12 @@ namespace SendAlertEmail
                 return "";
             }
         }
-        private static bool checkSendEmail
-        {
-            get
-            {
-                string CheckSendEmail = ConfigurationManager.AppSettings["SendEmailEveryDay"].ToString();
-                bool chk = Convert.ToBoolean(CheckSendEmail);
-                if (!chk)
-                {
-                    return false;
-                }
-                return true;
-              
-            }
-        }
+        private static string checkSendEmail = ConfigurationManager.AppSettings["SendEmailEveryDay"].ToString();
+
         public static void sendAlertEmail ()
         {
             DataClasses1DataContext db = new DataClasses1DataContext(dbConnectionString);
-
+            bool chk = Convert.ToBoolean(checkSendEmail);
             if (db.Connection.State == ConnectionState.Open)
             {
                 db.Connection.Close();
@@ -108,14 +96,14 @@ namespace SendAlertEmail
                                             string emailBody = emailtemp.EmailBody;
                                             string emailSubject = emailtemp.EmailSubject;
                                             string sendTo = trnmemo.ToPerson;
-                                            if (checkSendEmail)
+                                            if (chk)
                                             {
                                                 if (sumDatetime >= dtnow)
                                                 {
                                                     SendEmail.sendEmail(emailBody, sendTo, emailSubject);
                                                 }
                                             }
-                                            if (!checkSendEmail)
+                                            if (!chk)
                                             {
                                                 if (sumDatetime == dtnow)
                                                 {
