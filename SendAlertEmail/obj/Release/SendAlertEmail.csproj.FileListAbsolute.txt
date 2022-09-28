@@ -1,0 +1,6 @@
+D:\SentAlertEmail\SendAlertEmail\obj\Release\SendAlertEmail.csproj.AssemblyReference.cache
+D:\SentAlertEmail\SendAlertEmail\obj\Release\SendAlertEmail.csproj.SuggestedBindingRedirects.cache
+D:\SentAlertEmail\SendAlertEmail\obj\Release\SendAlertEmail.csproj.CoreCompileInputs.cache
+D:\SendAlertEmail\SendAlertEmail\obj\Release\SendAlertEmail.csproj.AssemblyReference.cache
+D:\SendAlertEmail\SendAlertEmail\obj\Release\SendAlertEmail.csproj.SuggestedBindingRedirects.cache
+D:\SendAlertEmail\SendAlertEmail\obj\Release\SendAlertEmail.csproj.CoreCompileInputs.cache
