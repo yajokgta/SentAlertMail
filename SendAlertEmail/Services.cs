@@ -27,18 +27,6 @@ namespace SendAlertEmail
                 return "";
             }
         }
-        private static string _BaseAPI
-        {
-            get
-            {
-                var BaseAPI = ConfigurationManager.AppSettings["BaseAPI"];
-                if (!string.IsNullOrEmpty(BaseAPI))
-                {
-                    return BaseAPI;
-                }
-                return "";
-            }
-        }
         private static string masterDataType
         {
             get
@@ -111,9 +99,10 @@ namespace SendAlertEmail
                                         DateTime enddate = Convert.ToDateTime(value[0]);
                                         DateTime dtnow = DateTime.Now;
                                         DateTime sumDatetime = enddate.AddDays(-mstdataDay);
-
+                                        //Search EmailTemplate Form MasterData : Value4//
                                         List<MSTEmailTemplate> mstemailtemp = new List<MSTEmailTemplate>();
                                         mstemailtemp = db.MSTEmailTemplates.Where(x => x.FormState == objmstdata.Value4).ToList();
+  
                                         foreach (var emailtemp in mstemailtemp)
                                         {
                                             string emailBody = emailtemp.EmailBody;
