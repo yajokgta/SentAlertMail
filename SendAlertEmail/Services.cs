@@ -53,7 +53,15 @@ namespace SendAlertEmail
             else
             {
                 WriteLogFile.writeLogFile("Connect To Database Server...");
-                db.Connection.Open();
+                try 
+                {
+                    db.Connection.Open();
+                }
+                catch
+                {
+                    WriteLogFile.writeLogFile("Connect Fail..!!");
+                    Environment.Exit(0);
+                }
                 WriteLogFile.writeLogFile("Connect Success");
                 WriteLogFile.writeLogFile("Search MasterDataType : "+masterDataType);
                 List<MSTMasterData> objmasterdata = new List<MSTMasterData>();

@@ -11,8 +11,6 @@ namespace SendAlertEmail
 {
     class Program
     {
-        
-       
         static void Main(string[] args)
         {
             //---For TestSendEmail Functions----//
@@ -22,7 +20,7 @@ namespace SendAlertEmail
             //SendEmail.sendEmail(c, a, b);
             //---For TestSendEmail Functions----//
 
-            WriteLogFile.writeLogFile("====== Start Process WOLF_SendAlertEmail ====== : " + DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
+            WriteLogFile.writeLogFile("====== Start Process WOLF_SendAlertEmail ======");
             WriteLogFile.writeLogFile(string.Format("Run batch as :{0}", System.Security.Principal.WindowsIdentity.GetCurrent().Name));
 
             Console.WriteLine("Start Process WOLF_SendAlertEmail : " + DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
