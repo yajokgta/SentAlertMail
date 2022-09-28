@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WolfApprove.Model.CustomClass;
+using Microsoft.SharePoint.Client.Publishing;
 
 namespace SendAlertEmail
 {
@@ -78,8 +79,10 @@ namespace SendAlertEmail
                 WriteLogFile.writeLogFile("Connect To Database Server...");
                 db.Connection.Open();
                 WriteLogFile.writeLogFile("Connect Success");
+                WriteLogFile.writeLogFile("Search MasterDataType : "+masterDataType);
                 List<MSTMasterData> objmasterdata = new List<MSTMasterData>();
                 objmasterdata = db.MSTMasterDatas.Where(x => x.MasterType == masterDataType).ToList();
+                WriteLogFile.writeLogFile("Found : " + objmasterdata.Count);
                 if (objmasterdata.Count != 0)
                 {
                     foreach (var objmstdata in objmasterdata)
@@ -90,7 +93,9 @@ namespace SendAlertEmail
                         foreach (var temp in objtemp)
                         {
                             List<TRNMemo> objtrnmemo = new List<TRNMemo>();
+                            WriteLogFile.writeLogFile("Search TRNMemo Status : Wait for Approve...");
                             objtrnmemo = db.TRNMemos.Where(x => x.StatusName == "Wait for Approve" && x.TemplateId == temp.TemplateId).ToList();
+                            WriteLogFile.writeLogFile("Found : "+objtrnmemo.Count);
                             if (objtrnmemo.Count != 0)
                             {
                                 foreach (var trnmemo in objtrnmemo)
