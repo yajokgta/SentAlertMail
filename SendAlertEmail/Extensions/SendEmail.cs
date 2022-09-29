@@ -5,6 +5,8 @@ using System.Net.Mail;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using WolfApprove.Model.CustomClass;
+using WolfApprove.API2.Controllers.Services;
 
 namespace SendAlertEmail.Extensions
 {
@@ -19,7 +21,7 @@ namespace SendAlertEmail.Extensions
 
         public static string sendEmail(string Body, string MailTo, string subject)
         {
-            var result = "Succes";
+            var result = "";
             try
             {
                 SmtpClient smtpClient = new SmtpClient();
@@ -61,5 +63,157 @@ namespace SendAlertEmail.Extensions
             }
             return result;
         }
+        public static string ReplaceInActiveEmail(String Email, List<CustomMasterData> list_CustomMasterData)
+        {
+            if (list_CustomMasterData.Count > 0)
+            {
+                List<String> listTo = Email.Split(';').ToList();
+                Email = String.Empty;
+                foreach (String s in listTo)
+                {
+                    var temp = list_CustomMasterData.Where(a => a.Value1.ToUpper() == s.ToUpper()).ToList();
+                    if (temp.Count == 0)
+                    {
+                        if (!String.IsNullOrEmpty(Email))
+                        {
+                            Email += ";";
+                        }
+                        Email += s.Trim();
+                    }
+                }
+            }
+            return Email;
+        }
+        public static bool IsValidEmail(String email)
+        {
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == email;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public static void SendEmailTemplate(string Body, string subject, String To, String CC)
+        {
+
+            String Subject = subject;
+            String html = Body;
+            MailAddress fromAddress = new MailAddress(_SMTPUser, _DisplayName);
+            try
+            {
+
+                String tempSMTPServer = _SMTPServer;
+                int tempSMTPPort = Convert.ToInt32(_SMTPPort);
+                Boolean tempSMTPEnableSsl = Convert.ToBoolean(_SMTPEnableSSL) ;
+                String tempSMTPUser = _SMTPUser;
+                String tempSMTPPassword = _SMTPPassword;
+                String tempSMTPTestMode = "";
+                String tempSMTPTo = To;
+
+
+                List<CustomMasterData> list_CustomMasterData =
+                    new MasterDataService().GetMasterDataListInActiveEmail(new CustomMasterData { connectionString = Services.dbConnectionString });
+                To = ReplaceInActiveEmail(To, list_CustomMasterData);
+                CC = ReplaceInActiveEmail(CC, list_CustomMasterData);
+                if (String.IsNullOrEmpty(To))
+                {
+                    To = CC;
+                    CC = String.Empty;
+                }
+                WriteLogFile.writeLogFile("Time before Sendmail :" + DateTime.Now.ToString("hh:mm:ss tt"));
+                WriteLogFile.writeLogFile($"To = {To} | CC = {CC}");
+
+                SmtpClient _smtp = new SmtpClient();
+                _smtp.Host = tempSMTPServer;
+                _smtp.Port = tempSMTPPort;
+                _smtp.EnableSsl = tempSMTPEnableSsl;
+                _smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+                _smtp.UseDefaultCredentials = false;
+                _smtp.Timeout = 300000; //5 Minutes Timeout
+                if (!String.IsNullOrEmpty(tempSMTPUser) && !String.IsNullOrEmpty(tempSMTPPassword))
+                {
+                    _smtp.Credentials = new System.Net.NetworkCredential(tempSMTPUser, tempSMTPPassword);
+                }
+                else
+                {
+                    _smtp.UseDefaultCredentials = true;
+                }
+
+                var mailMessage = new System.Net.Mail.MailMessage();
+                mailMessage.From = fromAddress;
+                new System.Net.Mail.MailAddress(tempSMTPUser);
+
+                Boolean blTestMode = false;
+                if (!String.IsNullOrEmpty(tempSMTPTestMode))
+                {
+                    blTestMode = tempSMTPTestMode == "T";
+                }
+                if (blTestMode)
+                {
+                    html = $"{html}<br/><br/>To : {To}<br/>CC : {CC}";
+                    To = tempSMTPTo;
+                    CC = tempSMTPTo;
+                }
+
+                if (!String.IsNullOrEmpty(To))
+                {
+
+                    if (To.IndexOf(';') > -1)
+                    {
+                        String[] obj = To.Split(';').Where(x => !string.IsNullOrEmpty(x)).Select(x => x.Trim().ToLower()).Distinct().ToArray();
+                        for (int i = 0; i < obj.Length; i++)
+                        {
+                            if (!String.IsNullOrEmpty(obj[i].Trim()))
+                                if (IsValidEmail(obj[i].Trim()))
+                                    mailMessage.To.Add(obj[i].Trim());
+                        }
+                    }
+                    else if (IsValidEmail(To.Trim()))
+                        mailMessage.To.Add(To.Trim());
+
+                    if (!string.IsNullOrEmpty(CC))
+                        if (CC.IndexOf(';') > -1)
+                        {
+                            String[] objcc = CC.Split(';').Where(x => !string.IsNullOrEmpty(x)).Select(x => x.Trim().ToLower()).Distinct().ToArray();
+                            for (int i = 0; i < objcc.Length; i++)
+                            {
+                                if (!String.IsNullOrEmpty(objcc[i].Trim()))
+                                    if (IsValidEmail(objcc[i].Trim()))
+                                        mailMessage.CC.Add(objcc[i].Trim());
+                            }
+                        }
+                        else if (IsValidEmail(CC.Trim()))
+                            mailMessage.CC.Add(CC.Trim());
+
+                    mailMessage.Subject = Subject;
+                    System.Net.Mail.AlternateView htmlView = System.Net.Mail.AlternateView.CreateAlternateViewFromString(html, null,
+                    System.Net.Mime.MediaTypeNames.Text.Html);
+                    mailMessage.AlternateViews.Add(htmlView);
+                    mailMessage.IsBodyHtml = true;
+
+                    if (mailMessage.To.Count > 0)
+                    {
+                        WriteLogFile.writeLogFile($"{DateTime.Now} - before _smtp.Send(mailMessage) | SendAsync = false");
+                        _smtp.Send(mailMessage);
+                        WriteLogFile.writeLogFile($"{DateTime.Now} - after _smtp.Send(mailMessage) | SendAsync = false");
+                    }
+                    WriteLogFile.writeLogFile("Time after Sendmail :" + DateTime.Now.ToString("hh:mm:ss tt"));
+                }
+
+            }
+            catch (Exception ex)
+            {
+                WriteLogFile.writeLogFile($"{ex.ToString()}");
+                WriteLogFile.writeLogFile("Send Email Fail...!!");
+                Environment.Exit(0);
+            }
+
+        }
+
+
     }
 }

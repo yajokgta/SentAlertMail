@@ -17,7 +17,7 @@ namespace SendAlertEmail
             //string a = "test@gmail.com";
             //string b = "TestingForEmail";
             //string c = "BodyTest";
-            //SendEmail.sendEmail(c, a, b);
+            //SendEmail.SendEmailTemplate(c, b, a,"");
             //---For TestSendEmail Functions----//
 
             WriteLogFile.writeLogFile("====== Start Process WOLF_SendAlertEmail ======");
@@ -27,7 +27,7 @@ namespace SendAlertEmail
             Console.WriteLine("Wait For PROCESS... : " + DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
 
             Services.sendAlertEmail();
-
+            WriteLogFile.writeLogFile("======= Stop Process WOLF_SendAlertEmail =======");
             Console.WriteLine("SendEmail Success : "+DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
             Console.WriteLine("Exit.. : "+ DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
             Environment.Exit(0);

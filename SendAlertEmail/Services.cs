@@ -10,6 +10,8 @@ using System.Text;
 using System.Threading.Tasks;
 using WolfApprove.Model.CustomClass;
 using Microsoft.SharePoint.Client.Publishing;
+using WolfApprove.Model.Extension;
+using System.Globalization;
 
 namespace SendAlertEmail
 {
@@ -70,64 +72,89 @@ namespace SendAlertEmail
                 if (objmasterdata.Count != 0)
                 {
                     foreach (var objmstdata in objmasterdata)
-                    { 
-                    List<MSTTemplate> objtemp = new List<MSTTemplate>();
-                        int mstdataDay = Convert.ToInt32(objmstdata.Value3);
-                        objtemp = db.MSTTemplates.Where(x => x.DocumentCode == objmstdata.Value1).ToList();
-                        foreach (var temp in objtemp)
+                    {
+                        bool isActive = Convert.ToBoolean(objmstdata.IsActive);
+                        if (isActive)
                         {
-                            List<TRNMemo> objtrnmemo = new List<TRNMemo>();
-                            WriteLogFile.writeLogFile("Search TRNMemo Status : Wait for Approve...");
-                            objtrnmemo = db.TRNMemos.Where(x => x.StatusName == "Wait for Approve" && x.TemplateId == temp.TemplateId).ToList();
-                            WriteLogFile.writeLogFile("Found : "+objtrnmemo.Count);
-                            if (objtrnmemo.Count != 0)
+                            List<MSTTemplate> objtemp = new List<MSTTemplate>();
+                            int mstdataDay = Convert.ToInt32(objmstdata.Value3);
+                            objtemp = db.MSTTemplates.Where(x => x.DocumentCode == objmstdata.Value1).ToList();
+                            foreach (var temp in objtemp)
                             {
-                                foreach (var trnmemo in objtrnmemo)
+                                List<TRNMemo> objtrnmemo = new List<TRNMemo>();
+                                WriteLogFile.writeLogFile("Search TRNMemo Status : Wait for Approve...");
+                                objtrnmemo = db.TRNMemos.Where(x => x.StatusName == "Wait for Approve" && x.TemplateId == temp.TemplateId).ToList();
+                                WriteLogFile.writeLogFile("Found : " + objtrnmemo.Count);
+                                if (objtrnmemo.Count != 0)
                                 {
-                                    string[] value = new string[1];
-                                    List<CustomJsonAdvanceForm.BoxLayout_RefDoc> tempMAdvanceFormItem = ConvertAdvanceFromToList.convertAdvanceFormToList(trnmemo.MAdvancveForm);
-                                    foreach (var tempItem in tempMAdvanceFormItem)
+                                    foreach (var trnmemo in objtrnmemo)
                                     {
-                                        if (tempItem.Box_Control_Label == objmstdata.Value2.ToString())
+                                        string[] value = new string[1];
+                                        List<CustomJsonAdvanceForm.BoxLayout_RefDoc> tempMAdvanceFormItem = ConvertAdvanceFromToList.convertAdvanceFormToList(trnmemo.MAdvancveForm);
+                                        foreach (var tempItem in tempMAdvanceFormItem)
                                         {
-                                            value[0] = tempItem.Box_Control_Value;
-                                        }
-                                        DateTime enddate = Convert.ToDateTime(value[0]);
-                                        DateTime dtnow = DateTime.Now;
-                                        DateTime sumDatetime = enddate.AddDays(-mstdataDay);
-                                        //Search EmailTemplate Form MasterData : Value4//
-                                        List<MSTEmailTemplate> mstemailtemp = new List<MSTEmailTemplate>();
-                                        mstemailtemp = db.MSTEmailTemplates.Where(x => x.FormState == objmstdata.Value4).ToList();
-  
-                                        foreach (var emailtemp in mstemailtemp)
-                                        {
-                                            string emailBody = emailtemp.EmailBody;
-                                            string emailSubject = emailtemp.EmailSubject;
-                                            string sendTo = trnmemo.ToPerson;
-                                            if (chk)
+                                            if (tempItem.Box_Control_Label == objmstdata.Value2.ToString())
                                             {
-                                                if (sumDatetime >= dtnow)
-                                                {
-                                                    SendEmail.sendEmail(emailBody, sendTo, emailSubject);
-                                                }
+                                                value[0] = tempItem.Box_Control_Value;
                                             }
-                                            if (!chk)
-                                            {
-                                                if (sumDatetime == dtnow)
-                                                {
-                                                    SendEmail.sendEmail(emailBody, sendTo, emailSubject);
-                                                }
-                                            }
-                                        }
 
+                                            if (!string.IsNullOrEmpty(value[0]))
+                                            {
+                                                DateTime enddate = Convert.ToDateTime(value[0]);
+                                                string dtformatt = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss", new CultureInfo("en-US"));
+                                                DateTime dtnow = Convert.ToDateTime(dtformatt);
+                                                DateTime sumDatetime = enddate.AddDays(-mstdataDay);
+                                                //Search EmailTemplate Form MasterData : Value4//
+                                                List<MSTEmailTemplate> mstemailtemp = new List<MSTEmailTemplate>();
+                                                mstemailtemp = db.MSTEmailTemplates.Where(x => x.FormState == objmstdata.Value5).ToList();
+                                                List<MSTEmployee> objemp = new List<MSTEmployee>();
+                                                objemp = db.MSTEmployees.Where(x => x.NameTh == trnmemo.PersonWaiting).ToList();
+                                                if(objemp.Count != 0)
+                                                {
+                                                    foreach(var emp in objemp)
+                                                    {
+                                                        if (mstemailtemp.Count != 0)
+                                                        {
+                                                            foreach (var emailtemp in mstemailtemp)
+                                                            {
+                                                                string emailBody = emailtemp.EmailBody;
+                                                                string emailSubject = emailtemp.EmailSubject;
+                                                                string sendTo = emp.Email;
+                                                                if (chk)
+                                                                {
+                                                                    if (sumDatetime.Date <= dtnow.Date)
+                                                                    {
+                                                                        SendEmail.SendEmailTemplate(emailBody, emailSubject, sendTo, "");
+                                                                    }
+                                                                }
+                                                                if (!chk)
+                                                                {
+                                                                    if (sumDatetime.Date == dtnow.Date)
+                                                                    {
+                                                                        SendEmail.SendEmailTemplate(emailBody, emailSubject, sendTo, "");
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                
+                                            }
+                                            else
+                                            {
+                                                WriteLogFile.writeLogFile("Not Found COntrol EndDate..!");
+                                                Environment.Exit(0);
+                                            }
+                                        }
                                     }
                                 }
+
                             }
-                            WriteLogFile.writeLogFile("Not Found TRNMemo Status : Wait for Approve");
                         }
+                        
                     }
                 }
-                WriteLogFile.writeLogFile("Not Found MasterDataType : " + masterDataType);
+                
             }
         }
     }
