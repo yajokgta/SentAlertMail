@@ -104,7 +104,7 @@ namespace SendAlertEmail
                                                 string dtformatt = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss", new CultureInfo("en-US"));
                                                 DateTime dtnow = Convert.ToDateTime(dtformatt);
                                                 DateTime sumDatetime = enddate.AddDays(-mstdataDay);
-                                                //Search EmailTemplate Form MasterData : Value4//
+                                                //Search EmailTemplate Form MasterData : Value5//
                                                 List<MSTEmailTemplate> mstemailtemp = new List<MSTEmailTemplate>();
                                                 mstemailtemp = db.MSTEmailTemplates.Where(x => x.FormState == objmstdata.Value5).ToList();
                                                 List<MSTEmployee> objemp = new List<MSTEmployee>();
