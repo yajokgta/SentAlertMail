@@ -206,3 +206,4 @@ D:\Sendmail\SendAlertEmail\bin\Debug\SendAlertEmail.exe.manifest
 D:\Sendmail\SendAlertEmail\bin\Debug\SendAlertEmail.application
 D:\Sendmail\SendAlertEmail\obj\Debug\SendAlertEmail.exe.manifest
 D:\Sendmail\SendAlertEmail\obj\Debug\SendAlertEmail.application
+D:\Sendmail\SendAlertEmail\obj\Debug\SendAlertEmail.csproj.AssemblyReference.cache
