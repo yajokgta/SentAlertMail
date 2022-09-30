@@ -120,18 +120,19 @@ namespace SendAlertEmail
                                                                 string emailBody = emailtemp.EmailBody;
                                                                 string emailSubject = emailtemp.EmailSubject;
                                                                 string sendTo = emp.Email;
+                                                                string sendToCC = trnmemo.CcPerson;
                                                                 if (chk)
                                                                 {
                                                                     if (sumDatetime.Date <= dtnow.Date)
                                                                     {
-                                                                        SendEmail.SendEmailTemplate(emailBody, emailSubject, sendTo, "");
+                                                                        SendEmail.SendEmailTemplate(emailBody, emailSubject, sendTo, sendToCC);
                                                                     }
                                                                 }
                                                                 if (!chk)
                                                                 {
                                                                     if (sumDatetime.Date == dtnow.Date)
                                                                     {
-                                                                        SendEmail.SendEmailTemplate(emailBody, emailSubject, sendTo, "");
+                                                                        SendEmail.SendEmailTemplate(emailBody, emailSubject, sendTo, sendToCC);
                                                                     }
                                                                 }
                                                             }
