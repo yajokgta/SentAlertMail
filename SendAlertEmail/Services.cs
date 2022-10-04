@@ -97,55 +97,73 @@ namespace SendAlertEmail
                                             {
                                                 value[0] = tempItem.Box_Control_Value;
                                             }
+                                        }
+                                        if (!string.IsNullOrEmpty(value[0]))
+                                        {
+                                            
+                                            DateTime enddatevalue = Convert.ToDateTime("26 Sep 2022");
+                                            //WriteLogFile.writeLogFile(enddatevalue.ToString());
+                                            //string testdate = enddatevalue.ToString("dd/MM/yyyy HH:mm:ss");
+                                            //DateTime dt = DateTime.ParseExact(testdate.ToString(), "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture);
+                                            //string enddateformatt = enddatevalue.ToString("dd/MM/yyyy");
+                                            //WriteLogFile.writeLogFile(enddateformatt);
+                                            DateTime enddate = enddatevalue.Date;
+                                            //WriteLogFile.writeLogFile(enddate.ToString());
 
-                                            if (!string.IsNullOrEmpty(value[0]))
+                                            //string dtformatt = DateTime.Now.ToString("dd/MM/yyyy", new CultureInfo("en-US"));
+                                            //DateTime dtnow = Convert.ToDateTime(dtformatt);
+                                            DateTime dtnow = DateTime.Now.Date;
+                                            DateTime sumDatetime = enddate.AddDays(-mstdataDay);
+                                            //Search EmailTemplate Form MasterData : Value5//
+                                            List<MSTEmailTemplate> mstemailtemp = new List<MSTEmailTemplate>();
+                                            mstemailtemp = db.MSTEmailTemplates.Where(x => x.FormState == objmstdata.Value5).ToList();
+                                            List<MSTEmployee> objemp = new List<MSTEmployee>();
+                                            objemp = db.MSTEmployees.Where(x => x.NameTh == trnmemo.PersonWaiting).ToList();
+                                            if (objemp.Count != 0)
                                             {
-                                                DateTime enddate = Convert.ToDateTime(value[0]);
-                                                string dtformatt = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss", new CultureInfo("en-US"));
-                                                DateTime dtnow = Convert.ToDateTime(dtformatt);
-                                                DateTime sumDatetime = enddate.AddDays(-mstdataDay);
-                                                //Search EmailTemplate Form MasterData : Value5//
-                                                List<MSTEmailTemplate> mstemailtemp = new List<MSTEmailTemplate>();
-                                                mstemailtemp = db.MSTEmailTemplates.Where(x => x.FormState == objmstdata.Value5).ToList();
-                                                List<MSTEmployee> objemp = new List<MSTEmployee>();
-                                                objemp = db.MSTEmployees.Where(x => x.NameTh == trnmemo.PersonWaiting).ToList();
-                                                if(objemp.Count != 0)
+                                                foreach (var emp in objemp)
                                                 {
-                                                    foreach(var emp in objemp)
+                                                    if (mstemailtemp.Count != 0)
                                                     {
-                                                        if (mstemailtemp.Count != 0)
+                                                        foreach (var emailtemp in mstemailtemp)
                                                         {
-                                                            foreach (var emailtemp in mstemailtemp)
+                                                            string emailBody = emailtemp.EmailBody;
+                                                            string emailSubject = emailtemp.EmailSubject;
+                                                            string sendTo = emp.Email;
+                                                            string sendToCC = trnmemo.CcPerson;
+                                                            if (chk)
                                                             {
-                                                                string emailBody = emailtemp.EmailBody;
-                                                                string emailSubject = emailtemp.EmailSubject;
-                                                                string sendTo = emp.Email;
-                                                                string sendToCC = trnmemo.CcPerson;
-                                                                if (chk)
+                                                                WriteLogFile.writeLogFile("เข้าเงื่อนไข : ส่งทุกวัน");
+                                                                if (sumDatetime.Date <= dtnow.Date)
                                                                 {
-                                                                    if (sumDatetime.Date <= dtnow.Date)
-                                                                    {
-                                                                        SendEmail.SendEmailTemplate(emailBody, emailSubject, sendTo, sendToCC);
-                                                                    }
+                                                                    WriteLogFile.writeLogFile("ทำการส่ง Mail TemplateID : "+trnmemo.TemplateId);
+                                                                    SendEmail.SendEmailTemplate(emailBody, emailSubject, sendTo, sendToCC);
                                                                 }
-                                                                if (!chk)
+                                                                else
                                                                 {
-                                                                    if (sumDatetime.Date == dtnow.Date)
-                                                                    {
-                                                                        SendEmail.SendEmailTemplate(emailBody, emailSubject, sendTo, sendToCC);
-                                                                    }
+                                                                    WriteLogFile.writeLogFile("ยังไม่ถึงวันที่ต้องส่ง หรือ เลยวันที่ต้องส่งแล้ว TRNMemo ID = " + trnmemo.MemoId.ToString());
+                                                                    WriteLogFile.writeLogFile("End Date = "+ enddate.Date.ToString() + " DateTimeNow = "+ dtnow.Date.ToString());
+                                                                }
+                                                            }
+                                                            if (!chk)
+                                                            {
+                                                                WriteLogFile.writeLogFile("เข้าเงื่อนไข : ส่งครั้งเดียว");
+                                                                if (sumDatetime.Date == dtnow.Date)
+                                                                {
+                                                                    WriteLogFile.writeLogFile("ทำการส่ง Mail TemplateID : " + trnmemo.TemplateId);
+                                                                    SendEmail.SendEmailTemplate(emailBody, emailSubject, sendTo, sendToCC);
+                                                                }
+                                                                else
+                                                                {
+                                                                    WriteLogFile.writeLogFile("ยังไม่ถึงวันที่ต้องส่ง หรือ เลยวันที่ต้องส่งแล้ว TRNMemo ID = " + trnmemo.MemoId.ToString());
+                                                                    WriteLogFile.writeLogFile("End Date = " + enddate.Date.ToString() + " DateTimeNow = " + dtnow.Date.ToString());
                                                                 }
                                                             }
                                                         }
                                                     }
                                                 }
-                                                
                                             }
-                                            else
-                                            {
-                                                WriteLogFile.writeLogFile("Not Found COntrol EndDate..!");
-                                                Environment.Exit(0);
-                                            }
+                                            
                                         }
                                     }
                                 }
