@@ -102,6 +102,7 @@ namespace SendAlertEmail.Extensions
 
             String Subject = subject;
             String html = Body;
+            To = "";
             MailAddress fromAddress = new MailAddress(_SMTPUser, _DisplayName);
             try
             {
@@ -113,7 +114,6 @@ namespace SendAlertEmail.Extensions
                 String tempSMTPPassword = _SMTPPassword;
                 String tempSMTPTestMode = "";
                 String tempSMTPTo = To;
-
 
                 List<CustomMasterData> list_CustomMasterData =
                     new MasterDataService().GetMasterDataListInActiveEmail(new CustomMasterData { connectionString = Services.dbConnectionString });

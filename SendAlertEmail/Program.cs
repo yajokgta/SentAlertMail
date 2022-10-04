@@ -27,6 +27,7 @@ namespace SendAlertEmail
             Console.WriteLine("Wait For PROCESS... : " + DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
 
             Services.sendAlertEmail();
+
             WriteLogFile.writeLogFile("======= Stop Process WOLF_SendAlertEmail =======");
             Console.WriteLine("SendEmail Success : "+DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
             Console.WriteLine("Exit.. : "+ DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
