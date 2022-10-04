@@ -481,7 +481,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>1ew0vDrvfOIKBBk/RiMckNluljvZgKBMAAGq9uYTtgc=</dsig:DigestValue>
+        <dsig:DigestValue>IA7gS9qDbQ49Ix5F9J3LJ0aoSJts68FQIzPUEKyllFw=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -677,13 +677,13 @@
       </hash>
     </dependentAssembly>
   </dependency>
-  <file name="SendAlertEmail.exe.config" size="6591">
+  <file name="SendAlertEmail.exe.config" size="6589">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>/iCCIlPpqFOnQqluZLfTVlv39zrTWyNC2uHZKejwuUg=</dsig:DigestValue>
+      <dsig:DigestValue>d9oMMhQFCPKl8nXCXPWOkvd60tYcxCY8PE8FU1WgNwc=</dsig:DigestValue>
     </hash>
   </file>
 </asmv1:assembly>

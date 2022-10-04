@@ -89,7 +89,8 @@ namespace SendAlertEmail
                                 {
                                     foreach (var trnmemo in objtrnmemo)
                                     {
-                                        string[] value = new string[1];
+                                        string[] value = new string[8];
+                                        
                                         List<CustomJsonAdvanceForm.BoxLayout_RefDoc> tempMAdvanceFormItem = ConvertAdvanceFromToList.convertAdvanceFormToList(trnmemo.MAdvancveForm);
                                         foreach (var tempItem in tempMAdvanceFormItem)
                                         {
@@ -97,7 +98,38 @@ namespace SendAlertEmail
                                             {
                                                 value[0] = tempItem.Box_Control_Value;
                                             }
+                                            if (tempItem.Box_Control_Label == "Serial No.#1")
+                                            {
+                                                value[1] = tempItem.Box_Control_Value;
+                                            }
+                                            if (tempItem.Box_Control_Label == "Serial No.#2")
+                                            {
+                                                value[2] = tempItem.Box_Control_Value;
+                                            }
+                                            if (tempItem.Box_Control_Label == "Serial No.#3")
+                                            {
+                                                value[3] = tempItem.Box_Control_Value;
+                                            }
+                                            if (tempItem.Box_Control_Label == "Serial No.#4")
+                                            {
+                                                value[4] = tempItem.Box_Control_Value;
+                                            }
+                                            if (tempItem.Box_Control_Label == "Serial No.#5")
+                                            {
+                                                value[5] = tempItem.Box_Control_Value;
+                                            }
+                                            if (tempItem.Box_Control_Label == "SO No.")
+                                            {
+                                                value[6] = tempItem.Box_Control_Value;
+                                            }
                                         }
+                                        value[7] = trnmemo.MemoId.ToString();
+                                        List<String> listvalue = new List<String>();
+                                        for (int i = 0; i < value.Length; i++)
+                                        {
+                                            listvalue.Add(value[i].ToString());
+                                        }
+
                                         if (!string.IsNullOrEmpty(value[0]))
                                         {
                                             
@@ -137,7 +169,7 @@ namespace SendAlertEmail
                                                                 if (sumDatetime.Date <= dtnow.Date)
                                                                 {
                                                                     WriteLogFile.writeLogFile("ทำการส่ง Mail TemplateID : "+trnmemo.TemplateId);
-                                                                    SendEmail.SendEmailTemplate(emailBody, emailSubject, sendTo, sendToCC);
+                                                                    SendEmail.SendEmailTemplate(emailBody, emailSubject, sendTo, sendToCC, listvalue);
                                                                 }
                                                                 else
                                                                 {
@@ -151,7 +183,7 @@ namespace SendAlertEmail
                                                                 if (sumDatetime.Date == dtnow.Date)
                                                                 {
                                                                     WriteLogFile.writeLogFile("ทำการส่ง Mail TemplateID : " + trnmemo.TemplateId);
-                                                                    SendEmail.SendEmailTemplate(emailBody, emailSubject, sendTo, sendToCC);
+                                                                    SendEmail.SendEmailTemplate(emailBody, emailSubject, sendTo, sendToCC, listvalue);
                                                                 }
                                                                 else
                                                                 {

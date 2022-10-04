@@ -19,50 +19,50 @@ namespace SendAlertEmail.Extensions
         public static string _SMTPPassword = System.Web.Configuration.WebConfigurationManager.AppSettings["SMTPPassword"];
         public static string _DisplayName = System.Web.Configuration.WebConfigurationManager.AppSettings["DisplayName"];
 
-        public static string sendEmail(string Body, string MailTo, string subject)
-        {
-            var result = "";
-            try
-            {
-                SmtpClient smtpClient = new SmtpClient();
-                NetworkCredential basicCredential = new NetworkCredential(_SMTPUser, _SMTPPassword);
-                MailMessage message = new MailMessage();
-                MailAddress fromAddress = new MailAddress(_SMTPUser, _DisplayName);
+        //public static string sendEmail(string Body, string MailTo, string subject)
+        //{
+        //    var result = "";
+        //    try
+        //    {
+        //        SmtpClient smtpClient = new SmtpClient();
+        //        NetworkCredential basicCredential = new NetworkCredential(_SMTPUser, _SMTPPassword);
+        //        MailMessage message = new MailMessage();
+        //        MailAddress fromAddress = new MailAddress(_SMTPUser, _DisplayName);
 
-                smtpClient.Host = _SMTPServer;
-                smtpClient.UseDefaultCredentials = false;
-                smtpClient.Credentials = basicCredential;
-                smtpClient.EnableSsl = Convert.ToBoolean(_SMTPEnableSSL);
-                smtpClient.Port = Convert.ToInt32(_SMTPPort);
+        //        smtpClient.Host = _SMTPServer;
+        //        smtpClient.UseDefaultCredentials = false;
+        //        smtpClient.Credentials = basicCredential;
+        //        smtpClient.EnableSsl = Convert.ToBoolean(_SMTPEnableSSL);
+        //        smtpClient.Port = Convert.ToInt32(_SMTPPort);
 
-                message.From = fromAddress;
-                //message.CC = sCc;
-                message.Subject = subject;
+        //        message.From = fromAddress;
+        //        //message.CC = sCc;
+        //        message.Subject = subject;
 
-                //Set IsBodyHtml to true means you can send HTML email.
-                message.IsBodyHtml = true;
+        //        //Set IsBodyHtml to true means you can send HTML email.
+        //        message.IsBodyHtml = true;
 
-                message.Priority = MailPriority.High;
-                message.Body = Body;
-                string[] mail = MailTo.Split(',');
-                foreach (string s in mail)
-                {
-                    if (s != "")
-                    {
-                        message.Bcc.Add(new MailAddress(s));
-                    }
-                }
+        //        message.Priority = MailPriority.High;
+        //        message.Body = Body;
+        //        string[] mail = MailTo.Split(',');
+        //        foreach (string s in mail)
+        //        {
+        //            if (s != "")
+        //            {
+        //                message.Bcc.Add(new MailAddress(s));
+        //            }
+        //        }
 
-                message.Sender = fromAddress;
-                smtpClient.Send(message);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-                result = ex.ToString();
-            }
-            return result;
-        }
+        //        message.Sender = fromAddress;
+        //        smtpClient.Send(message);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //        result = ex.ToString();
+        //    }
+        //    return result;
+        //}
         public static string ReplaceInActiveEmail(String Email, List<CustomMasterData> list_CustomMasterData)
         {
             if (list_CustomMasterData.Count > 0)
@@ -97,16 +97,26 @@ namespace SendAlertEmail.Extensions
             }
         }
 
-        public static void SendEmailTemplate(string Body, string subject, String To, String CC)
+        public static void SendEmailTemplate(string Body, string subject, String To, String CC,List<string> MAdvance)
         {
 
             String Subject = subject;
-            String html = Body;
+            
+            
             To = "";
+            string enddate = MAdvance[0];
+            string srno1 = MAdvance[1];
+            string srno2 = MAdvance[2];
+            string srno3 = MAdvance[3];
+            string srno4 = MAdvance[4];
+            string srno5 = MAdvance[5];
+            string sono = MAdvance[6];
+            string memoid = MAdvance[7];
+            String html = Body;
+
             MailAddress fromAddress = new MailAddress(_SMTPUser, _DisplayName);
             try
             {
-
                 String tempSMTPServer = _SMTPServer;
                 int tempSMTPPort = Convert.ToInt32(_SMTPPort);
                 Boolean tempSMTPEnableSsl = Convert.ToBoolean(_SMTPEnableSSL) ;
@@ -124,8 +134,6 @@ namespace SendAlertEmail.Extensions
                     To = CC;
                     CC = String.Empty;
                 }
-                WriteLogFile.writeLogFile("Time before Sendmail :" + DateTime.Now.ToString("hh:mm:ss tt"));
-                WriteLogFile.writeLogFile($"To = {To} | CC = {CC}");
 
                 SmtpClient _smtp = new SmtpClient();
                 _smtp.Host = tempSMTPServer;
@@ -188,8 +196,17 @@ namespace SendAlertEmail.Extensions
                         }
                         else if (IsValidEmail(CC.Trim()))
                             mailMessage.CC.Add(CC.Trim());
+                    string sSubject = Subject;
+                    mailMessage.Subject = sSubject;
+                    html = html.Replace("[End Date]", enddate)
+                              .Replace("[SO No.]", sono)
+                              .Replace("[Serial No.#1]", srno1)
+                              .Replace("[Serial No.#2]", srno2)
+                              .Replace("[Serial No.#3]", srno3)
+                              .Replace("[Serial No.#4]", srno4)
+                              .Replace("[Serial No.#5]", srno5)
+                              .Replace("[Link URL]", string.Format("<a href='{0}{1}'>Click</a>", System.Web.Configuration.WebConfigurationManager.AppSettings["MemoURL"], memoid));
 
-                    mailMessage.Subject = Subject;
                     System.Net.Mail.AlternateView htmlView = System.Net.Mail.AlternateView.CreateAlternateViewFromString(html, null,
                     System.Net.Mime.MediaTypeNames.Text.Html);
                     mailMessage.AlternateViews.Add(htmlView);
