@@ -7,11 +7,13 @@ using System.Text;
 using System.Threading.Tasks;
 using WolfApprove.Model.CustomClass;
 using WolfApprove.API2.Controllers.Services;
+using System.Text.RegularExpressions;
 
 namespace SendAlertEmail.Extensions
 {
-    class SendEmail
+    public class SendEmail
     {
+        
         public static string _SMTPServer = System.Web.Configuration.WebConfigurationManager.AppSettings["SMTPServer"];
         public static string _SMTPPort = System.Web.Configuration.WebConfigurationManager.AppSettings["SMTPPort"];
         public static string _SMTPEnableSSL = System.Web.Configuration.WebConfigurationManager.AppSettings["SMTPEnableSSL"];
@@ -99,7 +101,7 @@ namespace SendAlertEmail.Extensions
 
         public static void SendEmailTemplate(string Body, string subject, String To, String CC,List<string> MAdvance)
         {
-
+            DataClasses1DataContext db = new DataClasses1DataContext(Services.dbConnectionString);
             String Subject = subject;
             
             
@@ -170,28 +172,106 @@ namespace SendAlertEmail.Extensions
                 if (!String.IsNullOrEmpty(To))
                 {
 
-                    if (To.IndexOf(';') > -1)
+                    if (To.IndexOf(',') > -1)
                     {
-                        String[] obj = To.Split(';').Where(x => !string.IsNullOrEmpty(x)).Select(x => x.Trim().ToLower()).Distinct().ToArray();
+                        String[] obj = To.Split(',').Where(x => !string.IsNullOrEmpty(x)).Select(x => x.Trim().ToLower()).Distinct().ToArray();
                         for (int i = 0; i < obj.Length; i++)
                         {
-                            if (!String.IsNullOrEmpty(obj[i].Trim()))
-                                if (IsValidEmail(obj[i].Trim()))
+                            if (obj[i].ToString().Contains("@"))
+                            {
+                                if (!String.IsNullOrEmpty(obj[i].Trim()))
+                                {
+                                    IsValidEmail(obj[i].Trim());
                                     mailMessage.To.Add(obj[i].Trim());
+                                }
+                            }
+                            else
+                            {
+                                string ccname = obj[i].ToString();
+                                if (Regex.IsMatch(ccname, "^[a-zA-Z0-9]*$"))
+                                {
+                                    List<MSTEmployee> objemp = new List<MSTEmployee>();
+                                    objemp = db.MSTEmployees.Where(x => x.NameEn == ccname).ToList();
+                                    string[] mailvalue = new string[1];
+                                    foreach (var empname in objemp)
+                                    {
+                                        mailvalue[0] = empname.Email.ToString();
+                                    }
+                                    if (!string.IsNullOrEmpty(mailvalue[0]))
+                                    {
+                                        IsValidEmail(mailvalue[0].Trim());
+                                        mailMessage.To.Add(mailvalue[0].Trim());
+                                    }
+                                }
+                                else
+                                {
+                                    List<MSTEmployee> objemp = new List<MSTEmployee>();
+                                    objemp = db.MSTEmployees.Where(x => x.NameTh == ccname).ToList();
+                                    string[] mailvalue = new string[1];
+                                    foreach (var empname in objemp)
+                                    {
+                                        mailvalue[0] = empname.Email.ToString();
+                                    }
+                                    if (!string.IsNullOrEmpty(mailvalue[0]))
+                                    {
+                                        IsValidEmail(mailvalue[0].Trim());
+                                        mailMessage.To.Add(mailvalue[0].Trim());
+                                    }
+                                }
+                            }
                         }
                     }
                     else if (IsValidEmail(To.Trim()))
                         mailMessage.To.Add(To.Trim());
 
                     if (!string.IsNullOrEmpty(CC))
-                        if (CC.IndexOf(';') > -1)
+                        if (CC.IndexOf(',') > -1)
                         {
-                            String[] objcc = CC.Split(';').Where(x => !string.IsNullOrEmpty(x)).Select(x => x.Trim().ToLower()).Distinct().ToArray();
+                            String[] objcc = CC.Split(',').Where(x => !string.IsNullOrEmpty(x)).Select(x => x.Trim().ToLower()).Distinct().ToArray();
                             for (int i = 0; i < objcc.Length; i++)
                             {
-                                if (!String.IsNullOrEmpty(objcc[i].Trim()))
-                                    if (IsValidEmail(objcc[i].Trim()))
+                                if (objcc[i].ToString().Contains("@"))
+                                {
+                                    if (!String.IsNullOrEmpty(objcc[i].Trim()))
+                                    {
+                                        IsValidEmail(objcc[i].Trim());
                                         mailMessage.CC.Add(objcc[i].Trim());
+                                    }
+                                }
+                                else
+                                {
+                                    string ccname = objcc[i].ToString();
+                                    if (Regex.IsMatch(ccname, "^[a-zA-Z0-9]*$"))
+                                    {
+                                        List<MSTEmployee> objemp = new List<MSTEmployee>();
+                                        objemp = db.MSTEmployees.Where(x => x.NameEn == ccname).ToList();
+                                        string[] mailvalue = new string[1];
+                                        foreach (var empname in objemp)
+                                        {
+                                            mailvalue[0] = empname.Email.ToString();
+                                        }
+                                        if (!string.IsNullOrEmpty(mailvalue[0]))
+                                        {
+                                            IsValidEmail(mailvalue[0].Trim());
+                                            mailMessage.CC.Add(mailvalue[0].Trim());
+                                        }
+                                    }
+                                    else
+                                    {
+                                        List<MSTEmployee> objemp = new List<MSTEmployee>();
+                                        objemp = db.MSTEmployees.Where(x => x.NameTh == ccname).ToList();
+                                        string[] mailvalue = new string[1];
+                                        foreach (var empname in objemp)
+                                        {
+                                            mailvalue[0] = empname.Email.ToString();
+                                        }
+                                        if (!string.IsNullOrEmpty(mailvalue[0]))
+                                        {
+                                            IsValidEmail(mailvalue[0].Trim());
+                                            mailMessage.CC.Add(mailvalue[0].Trim());
+                                        }
+                                    }                                   
+                                }
                             }
                         }
                         else if (IsValidEmail(CC.Trim()))
@@ -205,7 +285,7 @@ namespace SendAlertEmail.Extensions
                               .Replace("[Serial No.#3]", srno3)
                               .Replace("[Serial No.#4]", srno4)
                               .Replace("[Serial No.#5]", srno5)
-                              .Replace("[Link URL]", string.Format("<a href='{0}{1}'>Click</a>", System.Web.Configuration.WebConfigurationManager.AppSettings["MemoURL"], memoid));
+                              .Replace("[URLToRequest]", string.Format("<a href='{0}{1}'>Click</a>", System.Web.Configuration.WebConfigurationManager.AppSettings["MemoURL"], memoid));
 
                     System.Net.Mail.AlternateView htmlView = System.Net.Mail.AlternateView.CreateAlternateViewFromString(html, null,
                     System.Net.Mime.MediaTypeNames.Text.Html);

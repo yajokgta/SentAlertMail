@@ -474,14 +474,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="SendAlertEmail.exe" size="155072">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="SendAlertEmail.exe" size="156608">
       <assemblyIdentity name="SendAlertEmail" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>IA7gS9qDbQ49Ix5F9J3LJ0aoSJts68FQIzPUEKyllFw=</dsig:DigestValue>
+        <dsig:DigestValue>zj9gRWtukjt5BkZnuQ0du8LCyFzXN9kAZBhNQcqIicQ=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -677,13 +677,13 @@
       </hash>
     </dependentAssembly>
   </dependency>
-  <file name="SendAlertEmail.exe.config" size="6589">
+  <file name="SendAlertEmail.exe.config" size="6674">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>d9oMMhQFCPKl8nXCXPWOkvd60tYcxCY8PE8FU1WgNwc=</dsig:DigestValue>
+      <dsig:DigestValue>4YZPM8IvqCOsah0g8q37Dg8o9wr41wVwJWdguaZbzx0=</dsig:DigestValue>
     </hash>
   </file>
 </asmv1:assembly>

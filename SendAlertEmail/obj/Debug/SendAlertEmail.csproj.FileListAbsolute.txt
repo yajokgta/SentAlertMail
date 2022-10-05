@@ -310,3 +310,4 @@ C:\Users\YaJoKz\Documents\SentAlertMail\SendAlertEmail\obj\Debug\SendAlertEmail.
 C:\Users\YaJoKz\Documents\SentAlertMail\SendAlertEmail\obj\Debug\SendAlertEmail.csproj.CopyComplete
 C:\Users\YaJoKz\Documents\SentAlertMail\SendAlertEmail\obj\Debug\SendAlertEmail.exe
 C:\Users\YaJoKz\Documents\SentAlertMail\SendAlertEmail\obj\Debug\SendAlertEmail.pdb
+D:\Sendmail\SendAlertEmail\obj\Debug\SendAlertEmail.csproj.AssemblyReference.cache
