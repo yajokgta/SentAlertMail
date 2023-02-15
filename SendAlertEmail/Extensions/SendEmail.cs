@@ -245,30 +245,22 @@ namespace SendAlertEmail.Extensions
                                     {
                                         List<MSTEmployee> objemp = new List<MSTEmployee>();
                                         objemp = db.MSTEmployees.Where(x => x.NameEn == ccname).ToList();
-                                        string[] mailvalue = new string[1];
-                                        foreach (var empname in objemp)
+                                        string mailvalue = objemp.First().Email.ToString();
+                                        if (!string.IsNullOrEmpty(mailvalue))
                                         {
-                                            mailvalue[0] = empname.Email.ToString();
-                                        }
-                                        if (!string.IsNullOrEmpty(mailvalue[0]))
-                                        {
-                                            IsValidEmail(mailvalue[0].Trim());
-                                            mailMessage.CC.Add(mailvalue[0].Trim());
+                                            IsValidEmail(mailvalue.Trim());
+                                            mailMessage.CC.Add(mailvalue.Trim());
                                         }
                                     }
                                     else
                                     {
                                         List<MSTEmployee> objemp = new List<MSTEmployee>();
                                         objemp = db.MSTEmployees.Where(x => x.NameTh == ccname).ToList();
-                                        string[] mailvalue = new string[1];
-                                        foreach (var empname in objemp)
+                                        string mailvalue = objemp.First().Email.ToString();
+                                        if (!string.IsNullOrEmpty(mailvalue))
                                         {
-                                            mailvalue[0] = empname.Email.ToString();
-                                        }
-                                        if (!string.IsNullOrEmpty(mailvalue[0]))
-                                        {
-                                            IsValidEmail(mailvalue[0].Trim());
-                                            mailMessage.CC.Add(mailvalue[0].Trim());
+                                            IsValidEmail(mailvalue.Trim());
+                                            mailMessage.CC.Add(mailvalue.Trim());
                                         }
                                     }                                   
                                 }
